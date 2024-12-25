@@ -73,8 +73,9 @@ abstract public class PlacementGuide extends Guide {
             return false;
 
         ItemPlacementContext ctx = getPlacementContext(player);
-        if (ctx == null || !ctx.canPlace()) return false;
-//        if (!state.currentState.getMaterial().isReplaceable()) return false;
+        if (ctx == null || !ctx.canPlace())
+            return false;
+        // if (!state.currentState.getMaterial().isReplaceable()) return false;
         if (!Configs.REPLACE_FLUIDS_SOURCE_BLOCKS.getBooleanValue()
                 && getProperty(state.currentState, FluidBlock.LEVEL).orElse(1) == 0)
             return false;
@@ -97,17 +98,21 @@ abstract public class PlacementGuide extends Guide {
         List<Action> actions = new ArrayList<>();
         PrinterPlacementContext ctx = getPlacementContext(player);
 
-        if (ctx == null) return actions;
+        if (ctx == null)
+            return actions;
         actions.add(new PrepareAction(ctx));
         actions.add(new InteractActionImpl(ctx));
-        if (ctx.shouldSneak) actions.add(new ReleaseShiftAction());
+        if (ctx.shouldSneak)
+            actions.add(new ReleaseShiftAction());
 
         return actions;
     }
 
     protected static boolean canBeClicked(World world, BlockPos pos) {
-        return getOutlineShape(world, pos) != VoxelShapes.empty()
-                && !(world.getBlockState(pos).getBlock() instanceof AbstractSignBlock); // FIXME signs
+        return !(getOutlineShape(world, pos) == VoxelShapes.empty()
+                && Configs.AIR_PLACE_BLOCKS.getBooleanValue() == false)
+                && !(world.getBlockState(pos).getBlock() instanceof AbstractSignBlock); //
+        // FIXME signs
     }
 
     private static VoxelShape getOutlineShape(World world, BlockPos pos) {
@@ -132,12 +137,14 @@ abstract public class PlacementGuide extends Guide {
         } else if (!(block instanceof DoorBlock) && !(blockState.getBlock() instanceof AbstractSignBlock)
                 && !blockState.isOf(Blocks.LADDER) && !blockState.isOf(Blocks.SUGAR_CANE)
                 && !blockState.isOf(Blocks.BUBBLE_COLUMN)) {
-//            Material material = blockState.getMaterial();
-//            if (material != Material.PORTAL && material != Material.STRUCTURE_VOID && material != Material.UNDERWATER_PLANT && material != Material.REPLACEABLE_UNDERWATER_PLANT) {
-//                return material.blocksMovement();
-//            } else {
-//                return true;
-//            }
+            // Material material = blockState.getMaterial();
+            // if (material != Material.PORTAL && material != Material.STRUCTURE_VOID &&
+            // material != Material.UNDERWATER_PLANT && material !=
+            // Material.REPLACEABLE_UNDERWATER_PLANT) {
+            // return material.blocksMovement();
+            // } else {
+            // return true;
+            // }
             // TODO --> if this ever gets removed
             return blockState.blocksMovement();
         }

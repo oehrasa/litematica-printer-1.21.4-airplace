@@ -91,16 +91,17 @@ abstract public class Guide extends BlockHelperImpl {
     }
 
     protected boolean statesEqualIgnoreProperties(BlockState state1, BlockState state2,
-                                                  Property<?>... propertiesToIgnore) {
+            Property<?>... propertiesToIgnore) {
         if (state1.getBlock() != state2.getBlock()) {
             return false;
         }
 
-        loop:
-        for (Property<?> property : state1.getProperties()) {
+        loop: for (Property<?> property : state1.getProperties()) {
             if (property == Properties.WATERLOGGED && !(state1.getBlock() instanceof CoralBlock)) {
                 continue;
             }
+            if (property == Properties.POWERED)
+                continue;
 
             for (Property<?> ignoredProperty : propertiesToIgnore) {
                 if (property == ignoredProperty) {

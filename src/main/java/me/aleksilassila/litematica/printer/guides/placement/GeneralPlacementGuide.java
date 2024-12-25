@@ -2,6 +2,7 @@ package me.aleksilassila.litematica.printer.guides.placement;
 
 import me.aleksilassila.litematica.printer.Printer;
 import me.aleksilassila.litematica.printer.SchematicBlockState;
+import me.aleksilassila.litematica.printer.config.Configs;
 import me.aleksilassila.litematica.printer.implementation.PrinterPlacementContext;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
@@ -12,6 +13,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+import org.apache.commons.compress.archivers.dump.DumpArchiveConstants.COMPRESSION_TYPE;
+
+import com.google.common.collect.ImmutableList;
+
+import fi.dy.masa.malilib.config.IConfigBase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +44,7 @@ public class GeneralPlacementGuide extends PlacementGuide {
     }
 
     protected boolean getRequiresSupport() {
-        return false;
+        return Configs.AIR_PLACE_BLOCKS.getBooleanValue();
     }
 
     protected boolean getRequiresExplicitShift() {
@@ -47,7 +56,7 @@ public class GeneralPlacementGuide extends PlacementGuide {
     }
 
     private Optional<Direction> getValidSide(SchematicBlockState state) {
-        boolean printInAir = false; // LitematicaMixinMod.PRINT_IN_AIR.getBooleanValue();
+        boolean printInAir = Configs.AIR_PLACE_BLOCKS.getBooleanValue(); // LitematicaMixinMod.PRINT_IN_AIR.getBooleanValue();
 
         List<Direction> sides = getPossibleSides();
 
@@ -101,16 +110,25 @@ public class GeneralPlacementGuide extends PlacementGuide {
     @Nullable
     public PrinterPlacementContext getPlacementContext(ClientPlayerEntity player) {
         try {
-            Optional<Direction> validSide = getValidSide(state);
-            Optional<Vec3d> hitVec = getHitVector(state);
             Optional<ItemStack> requiredItem = getRequiredItem(player);
             int requiredSlot = getRequiredItemStackSlot(player);
+            boolean requiresShift = getUseShift(state);
+            Optional<Direction> validSide = getValidSide(state);
+            Optional<Direction> lookDirection = getLookDirection();
+            // Should work
+            if (Configs.AIR_PLACE_BLOCKS.getBooleanValue()) {
+                if (!canBeClicked(state.world, state.blockPos))
+                    return null;
+
+                BlockHitResult bhr = new BlockHitResult(Vec3d.of(state.blockPos), validSide.get(), state.blockPos,
+                        requiresShift);
+                return new PrinterPlacementContext(player, bhr, requiredItem.get(), requiredSlot,
+                        lookDirection.orElse(null), requiresShift);
+            }
+            Optional<Vec3d> hitVec = getHitVector(state);
 
             if (validSide.isEmpty() || hitVec.isEmpty() || requiredItem.isEmpty() || requiredSlot == -1)
                 return null;
-
-            Optional<Direction> lookDirection = getLookDirection();
-            boolean requiresShift = getUseShift(state);
 
             BlockHitResult blockHitResult = new BlockHitResult(hitVec.get(), validSide.get().getOpposite(),
                     state.blockPos.offset(validSide.get()), false);
@@ -119,7 +137,7 @@ public class GeneralPlacementGuide extends PlacementGuide {
                     lookDirection.orElse(null), requiresShift);
         } catch (Exception e) {
             Printer.logger.error("getPlacementContext(): Exception caught: {}", e.getMessage());
-            //e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
     }

@@ -12,7 +12,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 import javax.annotation.Nullable;
 
@@ -25,15 +27,15 @@ import javax.annotation.Nullable;
 public class GuesserGuide extends GeneralPlacementGuide {
     private PrinterPlacementContext contextCache = null;
 
-    protected static Direction[] directionsToTry = new Direction[]{
+    protected static Direction[] directionsToTry = new Direction[] {
             Direction.NORTH,
             Direction.SOUTH,
             Direction.EAST,
             Direction.WEST,
             Direction.UP,
-            Direction.DOWN
+            Direction.DOWN,
     };
-    protected static Vec3d[] hitVecsToTry = new Vec3d[]{
+    protected static Vec3d[] hitVecsToTry = new Vec3d[] {
             new Vec3d(-0.25, -0.25, -0.25),
             new Vec3d(+0.25, -0.25, -0.25),
             new Vec3d(-0.25, +0.25, -0.25),
@@ -66,8 +68,12 @@ public class GuesserGuide extends GeneralPlacementGuide {
                 BlockState neighborState = state.world.getBlockState(neighborPos);
                 boolean requiresShift = getRequiresExplicitShift() || isInteractive(neighborState.getBlock());
 
-                if (!canBeClicked(state.world, neighborPos) || // Handle unclickable grass for example
-                        neighborState.isReplaceable())
+                if (!(canBeClicked(state.world, state.blockPos)) || // Handle
+                                                                    // unclickable
+                                                                    // grass
+                                                                    // for
+                                                                    // example
+                        (neighborState.isReplaceable() && Configs.AIR_PLACE_BLOCKS.getBooleanValue() == false))
                     continue;
 
                 Vec3d hitVec = Vec3d.ofCenter(state.blockPos)
@@ -77,9 +83,15 @@ public class GuesserGuide extends GeneralPlacementGuide {
                     Vec3d multiplier = Vec3d.of(side.getVector());
                     multiplier = new Vec3d(multiplier.x == 0 ? 1 : 0, multiplier.y == 0 ? 1 : 0,
                             multiplier.z == 0 ? 1 : 0);
+                    BlockHitResult hitResult;
+                    if (Configs.AIR_PLACE_BLOCKS.getBooleanValue())
+                        hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)), side.getOpposite(),
+                                state.blockPos,
+                                false);
+                    else
+                        hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)),
+                                side.getOpposite(), neighborPos, false);
 
-                    BlockHitResult hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)),
-                            side.getOpposite(), neighborPos, false);
                     PrinterPlacementContext context = new PrinterPlacementContext(player, hitResult, requiredItem, slot,
                             lookDirection, requiresShift);
                     BlockState result = getRequiredItemAsBlock(player)
