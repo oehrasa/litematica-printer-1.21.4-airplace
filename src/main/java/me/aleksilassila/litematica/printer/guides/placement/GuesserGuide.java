@@ -84,11 +84,14 @@ public class GuesserGuide extends GeneralPlacementGuide {
                     multiplier = new Vec3d(multiplier.x == 0 ? 1 : 0, multiplier.y == 0 ? 1 : 0,
                             multiplier.z == 0 ? 1 : 0);
                     BlockHitResult hitResult;
+
                     if (Configs.AIR_PLACE_BLOCKS.getBooleanValue())
-                        hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)), side.getOpposite(),
+                        hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)),
+                                side.getOpposite(),
                                 state.blockPos,
                                 false);
                     else
+
                         hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)),
                                 side.getOpposite(), neighborPos, false);
 

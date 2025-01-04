@@ -1,14 +1,15 @@
 package me.aleksilassila.litematica.printer;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import me.aleksilassila.litematica.printer.actions.Action;
 import me.aleksilassila.litematica.printer.actions.PrepareAction;
 import me.aleksilassila.litematica.printer.config.Configs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import net.minecraft.item.Item;
 
 public class ActionHandler {
     private final MinecraftClient client;
@@ -25,16 +26,23 @@ public class ActionHandler {
 
     public void onGameTick() {
         int tickRate = Configs.PRINTING_INTERVAL.getIntegerValue();
-        tick = tick % tickRate == tickRate - 1 ? 0 : tick + 1;
+        tick = tick % tickRate == tickRate - 1 && tick > 0 ? 0 : tick + 1;
 
-        if (tick % tickRate != 0) {
+        if (tick % tickRate != 0 || tick < 0)
             return;
-        }
 
         Action nextAction = actionQueue.poll();
 
         if (nextAction != null) {
             Printer.printDebug("Sending action {}", nextAction);
+            if (nextAction instanceof PrepareAction prep_action) {
+                lookAction = prep_action;
+                Item required_item = prep_action.context.getStack().getItem();
+                Item current_item_stack = player.getInventory().getStack(player.getInventory().selectedSlot).getItem();
+                if (!required_item.equals(current_item_stack)) {
+                    tick = -Configs.SWITCH_INTERVAL.getIntegerValue() + tickRate;
+                }
+            }
             nextAction.send(client, player);
         } else {
             lookAction = null;
