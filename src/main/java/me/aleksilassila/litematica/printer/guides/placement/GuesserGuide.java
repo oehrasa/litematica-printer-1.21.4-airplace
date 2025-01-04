@@ -102,8 +102,11 @@ public class GuesserGuide extends GeneralPlacementGuide {
                             .getPlacementState(context); // FIXME torch shift clicks another torch and getPlacementState
                     // is the clicked block, which is true
 
+                    boolean correctChestPlacement = targetState.contains(ChestBlock.CHEST_TYPE)
+                            ? correctChestPlacement(targetState, result)
+                            : true;
                     if (result != null
-                            && (statesEqual(result, targetState) || correctChestPlacement(targetState, result))) {
+                            && (statesEqual(result, targetState) && correctChestPlacement)) {
                         contextCache = context;
                         return context;
                     }

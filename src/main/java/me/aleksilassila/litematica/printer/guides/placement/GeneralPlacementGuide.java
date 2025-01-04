@@ -66,8 +66,8 @@ public class GeneralPlacementGuide extends PlacementGuide {
 
         List<Direction> validSides = new ArrayList<>();
         for (Direction side : sides) {
-            if (printInAir && !getRequiresSupport()) {
-                return Optional.of(side);
+            if (printInAir) {
+                validSides.add(side);
             } else {
                 SchematicBlockState neighborState = state.offset(side);
 
@@ -83,9 +83,10 @@ public class GeneralPlacementGuide extends PlacementGuide {
         }
 
         for (Direction validSide : validSides) {
-            if (!isInteractive(state.offset(validSide).currentState.getBlock())) {
-                return Optional.of(validSide);
-            }
+            // if (!isInteractive(state.offset(validSide).currentState.getBlock())) {
+
+            return Optional.of(validSide);
+            // }
         }
 
         return validSides.isEmpty() ? Optional.empty() : Optional.of(validSides.getFirst());
@@ -114,18 +115,21 @@ public class GeneralPlacementGuide extends PlacementGuide {
             int requiredSlot = getRequiredItemStackSlot(player);
             boolean requiresShift = getUseShift(state);
             Optional<Direction> validSide = getValidSide(state);
+            Direction side = validSide.get();
             Optional<Direction> lookDirection = getLookDirection();
             // Should work
+            Optional<Vec3d> hitVec = getHitVector(state);
             if (Configs.AIR_PLACE_BLOCKS.getBooleanValue()) {
                 if (!canBeClicked(state.world, state.blockPos))
                     return null;
 
-                BlockHitResult bhr = new BlockHitResult(Vec3d.of(state.blockPos), validSide.get(), state.blockPos,
+                BlockHitResult bhr = new BlockHitResult(
+                        hitVec.get(),
+                        side.getOpposite(), state.blockPos.offset(side),
                         requiresShift);
                 return new PrinterPlacementContext(player, bhr, requiredItem.get(), requiredSlot,
-                        lookDirection.orElse(null), requiresShift);
+                        lookDirection.get(), requiresShift);
             }
-            Optional<Vec3d> hitVec = getHitVector(state);
 
             if (validSide.isEmpty() || hitVec.isEmpty() || requiredItem.isEmpty() || requiredSlot == -1)
                 return null;

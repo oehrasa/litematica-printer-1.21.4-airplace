@@ -36,10 +36,10 @@ public class ActionHandler {
         if (nextAction != null) {
             Printer.printDebug("Sending action {}", nextAction);
             if (nextAction instanceof PrepareAction prep_action) {
-                lookAction = prep_action;
                 Item required_item = prep_action.context.getStack().getItem();
                 Item current_item_stack = player.getInventory().getStack(player.getInventory().selectedSlot).getItem();
                 if (!required_item.equals(current_item_stack)) {
+                    lookAction = prep_action;
                     tick = -Configs.SWITCH_INTERVAL.getIntegerValue() + tickRate;
                 }
             }
