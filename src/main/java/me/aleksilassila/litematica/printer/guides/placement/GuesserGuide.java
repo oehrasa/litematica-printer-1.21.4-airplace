@@ -76,8 +76,7 @@ public class GuesserGuide extends GeneralPlacementGuide {
                         (neighborState.isReplaceable() && Configs.AIR_PLACE_BLOCKS.getBooleanValue() == false))
                     continue;
 
-                Vec3d hitVec = Vec3d.ofCenter(state.blockPos)
-                        .add(Vec3d.of(side.getVector()).multiply(0.5));
+                Vec3d hitVec = state.blockPos.toCenterPos().add(side.getDoubleVector());
 
                 for (Vec3d hitVecToTry : hitVecsToTry) {
                     Vec3d multiplier = Vec3d.of(side.getVector());
@@ -86,8 +85,8 @@ public class GuesserGuide extends GeneralPlacementGuide {
                     BlockHitResult hitResult;
 
                     if (Configs.AIR_PLACE_BLOCKS.getBooleanValue())
-                        hitResult = new BlockHitResult(hitVec.add(hitVecToTry.multiply(multiplier)),
-                                side.getOpposite(),
+                        hitResult = new BlockHitResult(state.blockPos.toCenterPos(),
+                                side,
                                 state.blockPos,
                                 false);
                     else

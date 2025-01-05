@@ -112,23 +112,32 @@ public class GeneralPlacementGuide extends PlacementGuide {
             Optional<Direction> lookDirection = getLookDirection();
             // Should work
             Optional<Vec3d> hitVec = getHitVector(state);
-            if (Configs.AIR_PLACE_BLOCKS.getBooleanValue()) {
-                if (!canBeClicked(state.world, state.blockPos))
-                    return null;
 
-                BlockHitResult bhr = new BlockHitResult(
-                        hitVec.get(),
-                        side.getOpposite(), state.blockPos.offset(side),
-                        requiresShift);
-                return new PrinterPlacementContext(player, bhr, requiredItem.get(), requiredSlot,
-                        lookDirection.get(), requiresShift);
+            if (validSide.isEmpty() || hitVec.isEmpty() || requiredItem.isEmpty() || requiredSlot == -1) {
+
+                if (Configs.AIR_PLACE_BLOCKS.getBooleanValue()) {
+                    if (!canBeClicked(state.world, state.blockPos))
+                        return null;
+
+                    // BlockHitResult bhr = new BlockHitResult(
+                    // hitVec.get(),
+                    // side.getOpposite(), state.blockPos.offset(side),
+                    // requiresShift);
+                    BlockHitResult bhr = new BlockHitResult(
+                            hitVec.get(),
+                            side.getOpposite(), state.blockPos,
+                            requiresShift);
+                    return new PrinterPlacementContext(player, bhr, requiredItem.get(), requiredSlot,
+                            lookDirection.get(), requiresShift);
+                }
+                return null;
             }
 
-            if (validSide.isEmpty() || hitVec.isEmpty() || requiredItem.isEmpty() || requiredSlot == -1)
-                return null;
-
+            // BlockHitResult blockHitResult = new BlockHitResult(hitVec.get(),
+            // validSide.get().getOpposite(),
+            // state.blockPos.offset(validSide.get()), false);
             BlockHitResult blockHitResult = new BlockHitResult(hitVec.get(), validSide.get().getOpposite(),
-                    state.blockPos.offset(validSide.get()), false);
+                    state.blockPos, false);
 
             return new PrinterPlacementContext(player, blockHitResult, requiredItem.get(), requiredSlot,
                     lookDirection.orElse(null), requiresShift);

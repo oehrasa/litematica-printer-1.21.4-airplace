@@ -20,6 +20,10 @@ public class InteractActionImpl extends InteractAction {
     @Override
     protected void interact(MinecraftClient client, ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
         if (client.interactionManager != null) {
+            Direction dir = ctx.getPlayerLookDirection();
+            player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(dir.asRotation(),
+                    dir.getUnitVector().y * 90, player.isOnGround(), player.horizontalCollision));
+
             client.interactionManager.interactBlock(player, hand, hitResult);
             client.interactionManager.interactItem(player, hand);
         }

@@ -30,6 +30,8 @@ public class ActionHandler {
 
         if (tick % tickRate != 0 || tick < 0)
             return;
+        if (lookAction != null)
+            lookAction.send(client, player);
 
         Action nextAction = actionQueue.poll();
 
@@ -42,10 +44,11 @@ public class ActionHandler {
                     lookAction = prep_action;
                     tick = -Configs.SWITCH_INTERVAL.getIntegerValue();
                 }
+                prep_action.send(client, player);
             }
             nextAction.send(client, player);
         } else {
-            lookAction = null;
+            // lookAction = null;
         }
     }
 
