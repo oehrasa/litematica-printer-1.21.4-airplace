@@ -1,5 +1,12 @@
 package me.aleksilassila.litematica.printer.guides.placement;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 import me.aleksilassila.litematica.printer.Printer;
 import me.aleksilassila.litematica.printer.SchematicBlockState;
 import me.aleksilassila.litematica.printer.config.Configs;
@@ -11,20 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import org.apache.commons.compress.archivers.dump.DumpArchiveConstants.COMPRESSION_TYPE;
-
-import com.google.common.collect.ImmutableList;
-
-import fi.dy.masa.malilib.config.IConfigBase;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * An old school guide where there are defined specific conditions

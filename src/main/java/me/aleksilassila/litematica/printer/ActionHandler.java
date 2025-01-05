@@ -40,7 +40,7 @@ public class ActionHandler {
                 Item current_item_stack = player.getInventory().getStack(player.getInventory().selectedSlot).getItem();
                 if (!required_item.equals(current_item_stack)) {
                     lookAction = prep_action;
-                    tick = -Configs.SWITCH_INTERVAL.getIntegerValue() + tickRate;
+                    tick = -Configs.SWITCH_INTERVAL.getIntegerValue();
                 }
             }
             nextAction.send(client, player);

@@ -15,7 +15,7 @@ public class Configs {
         // Configs settings
         public static final ConfigInteger PRINTING_INTERVAL = new ConfigInteger("printingInterval", 1, 1, 40)
                         .apply(GENERIC_KEY);
-        public static final ConfigInteger SWITCH_INTERVAL = new ConfigInteger("switchInterval", 5, 1, 40)
+        public static final ConfigInteger SWITCH_INTERVAL = new ConfigInteger("switchInterval", 5, 1, 100)
                         .apply(GENERIC_KEY);
         public static final ConfigDouble PRINTING_RANGE = new ConfigDouble("printingRange", 5, 2.5, 5)
                         .apply(GENERIC_KEY);
