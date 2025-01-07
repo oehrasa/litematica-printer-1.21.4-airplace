@@ -48,7 +48,7 @@ public class ActionHandler {
             }
             nextAction.send(client, player);
         } else {
-            // lookAction = null;
+            lookAction = null;
         }
     }
 
