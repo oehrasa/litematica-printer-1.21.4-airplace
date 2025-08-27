@@ -23,10 +23,10 @@ public class PrepareAction extends Action {
         Direction lookDirection = context.lookDirection;
 
         if (lookDirection != null && lookDirection.getAxis().isHorizontal()) {
-            this.yaw = lookDirection.asRotation();
-        } else {
-            this.modifyYaw = false;
-        }
+    this.yaw = lookDirection.getPositiveHorizontalDegrees();
+} else {
+    this.modifyYaw = false;
+}
 
         if (lookDirection == Direction.UP) {
             this.pitch = -90;
@@ -49,24 +49,27 @@ public class PrepareAction extends Action {
     @Override
     public void send(MinecraftClient client, ClientPlayerEntity player) {
         ItemStack itemStack = context.getStack();
-        int slot = context.requiredItemSlot;
+        int requiredSlot = context.requiredItemSlot;
 
-        if (itemStack != null && client.interactionManager != null) {
-            PlayerInventory inventory = player.getInventory();
+if (itemStack != null && client.interactionManager != null) {
+    PlayerInventory inventory = player.getInventory();
 
-            // This thing is straight from MinecraftClient#doItemPick()
-            if (player.getAbilities().creativeMode) {
-                inventory.addPickBlock(itemStack);
-                client.interactionManager.clickCreativeStack(player.getStackInHand(Hand.MAIN_HAND),
-                        36 + inventory.selectedSlot);
-            } else if (slot != -1) {
-                if (PlayerInventory.isValidHotbarIndex(slot)) {
-                    inventory.selectedSlot = slot;
-                } else {
-                    client.interactionManager.pickFromInventory(slot);
-                }
-            }
+    if (player.getAbilities().creativeMode) {
+        int stackSlot = inventory.getSlotWithStack(itemStack);
+        if (stackSlot != -1) {
+            inventory.selectedSlot = stackSlot;
         }
+
+        client.interactionManager.clickCreativeStack(player.getStackInHand(Hand.MAIN_HAND),
+                36 + inventory.selectedSlot);
+    } else if (requiredSlot != -1) {
+        if (PlayerInventory.isValidHotbarIndex(requiredSlot)) {
+            inventory.selectedSlot = requiredSlot;
+        } else {
+            client.player.getInventory().selectedSlot = requiredSlot;
+        }
+    }
+}
 
         if (modifyPitch || modifyYaw) {
             float yaw = modifyYaw ? this.yaw : player.getYaw();
