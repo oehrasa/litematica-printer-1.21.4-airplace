@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +36,7 @@ abstract public class PlacementGuide extends Guide {
     }
 
     protected ItemStack getBlockItem(BlockState state) {
-        return state.getBlock().getPickStack(this.state.world, this.state.blockPos, state);
+        return state.getPickStack((WorldView)this.state.world, this.state.blockPos, true);
     }
 
     protected Optional<Block> getRequiredItemAsBlock(ClientPlayerEntity player) {
