@@ -58,16 +58,14 @@ tasks.withType<ProcessResources> {
     }
 }
 
-tasks.register("copyJar") {
-    // Specify that this task runs after the 'build' task
+tasks.register<Copy>("copyJar") {
     dependsOn("build")
 
-    // Specify the task's action
-    doLast {
-        val destination = file("build/${archives_base_name}-${minecraft_version}-${mod_version}.jar")
-        file("build/libs/litematica-printer.jar").copyTo(destination, true)
-        println("Copied output to ${destination.absolutePath}")
-    }
+    val jarTask = tasks.named("jar", Jar::class)
+    from(jarTask.get().archiveFile)
+    into("build/renamed")
+
+    rename { "${archives_base_name}-${minecraft_version}-${mod_version}.jar" }
 }
 
 tasks.build {
